@@ -1,0 +1,578 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="결제나 회원가입 없이 50개 문항으로 알아보는 무료 MBTI·DCNH 64유형 테스트">
+  <title>무료 64유형 성격 테스트</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: Pretendard, "Noto Sans KR", system-ui, sans-serif;
+      color: #20243a;
+      background: #f6f5fb;
+      font-synthesis: none;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 28px 16px; }
+    button { font: inherit; }
+    .app { width: min(100%, 700px); margin: 0 auto; }
+    .brand { margin: 0 0 12px; color: #6755c8; font-size: .9rem; font-weight: 800; letter-spacing: .04em; }
+    h1 { margin: 0; font-size: clamp(1.75rem, 6vw, 2.5rem); line-height: 1.2; }
+    .intro { margin: 12px 0 24px; color: #64677b; line-height: 1.7; }
+    .card { padding: clamp(22px, 5vw, 36px); border: 1px solid #e9e7f1; border-radius: 24px; background: #fff; box-shadow: 0 14px 40px #30255d0d; }
+    .eyebrow { margin: 0 0 8px; color: #7465c9; font-size: .9rem; font-weight: 750; }
+    h2 { margin: 0 0 12px; font-size: 1.45rem; line-height: 1.45; }
+    .muted { color: #707386; line-height: 1.7; }
+    .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
+    .button { min-height: 48px; padding: 12px 18px; border: 0; border-radius: 12px; background: #6755c8; color: #fff; font-weight: 750; cursor: pointer; }
+    .button:hover { background: #5542b5; }
+    .button:focus-visible, .choice:focus-visible { outline: 3px solid #f2b84b; outline-offset: 3px; }
+    .button.secondary { border: 1px solid #dedbea; background: #fff; color: #514b68; }
+    .button.secondary:hover { background: #f7f5fd; }
+    .progress-row { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 10px; color: #6e7082; font-size: .9rem; font-weight: 700; }
+    .track { height: 8px; overflow: hidden; border-radius: 99px; background: #eeedf4; }
+    .bar { width: 0; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #8974e7, #5a49c2); transition: width .2s ease; }
+    .choices { display: grid; gap: 12px; margin-top: 22px; }
+    .choice { width: 100%; min-height: 60px; padding: 16px; border: 1px solid #e3e1ed; border-radius: 14px; background: #fff; color: #292b40; text-align: left; line-height: 1.55; cursor: pointer; }
+    .choice:hover { border-color: #a99ce8; background: #faf9ff; }
+    .choice.selected { border-color: #7461d2; background: #f4f1ff; box-shadow: inset 0 0 0 1px #7461d2; }
+    .choice-scale { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; margin-top: 24px; }
+    .scale-button { min-height: 68px; padding: 10px 4px; border: 1px solid #e3e1ed; border-radius: 12px; background: #fff; color: #514b68; font-size: .82rem; line-height: 1.35; cursor: pointer; }
+    .scale-button:hover { border-color: #a99ce8; background: #faf9ff; }
+    .scale-button.selected { border-color: #7461d2; background: #f4f1ff; color: #5142b1; font-weight: 800; box-shadow: inset 0 0 0 1px #7461d2; }
+    .result-code { margin: 8px 0 10px; color: #5b49c1; font-size: clamp(2.7rem, 12vw, 4rem); font-weight: 900; letter-spacing: .02em; }
+    .type-code-button { display: block; padding: 0; border: 0; background: transparent; color: inherit; font: inherit; font-weight: inherit; letter-spacing: inherit; cursor: pointer; }
+    .type-code-button:hover { text-decoration: underline; text-decoration-thickness: 3px; text-underline-offset: 5px; }
+    .result-name { margin: 0; font-size: 1.3rem; }
+    .result-box { margin-top: 20px; padding: 18px; border-radius: 16px; background: #f7f5ff; line-height: 1.75; }
+    .result-profile { display: grid; gap: 14px; margin-top: 20px; }
+    .profile-section { padding: 18px; border: 1px solid #eeedf4; border-radius: 16px; background: #fff; }
+    .profile-section h3 { margin: 0 0 8px; color: #403777; font-size: 1.05rem; }
+    .profile-section p { margin: 0; color: #55576b; line-height: 1.8; }
+    .profile-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .profile-tag { padding: 6px 10px; border-radius: 99px; background: #f2efff; color: #5949b2; font-size: .85rem; font-weight: 750; }
+    .type-detail { margin-top: 18px; padding: 20px; border: 1px solid #e5e0fa; border-radius: 18px; background: linear-gradient(140deg, #faf9ff, #f1efff); }
+    .type-detail h3 { margin: 0 0 8px; font-size: 1.2rem; }
+    .rarity-rank { margin: 14px 0 4px; color: #5b49c1; font-size: 1.15rem; font-weight: 850; }
+    .rarity-track { height: 9px; margin-top: 10px; overflow: hidden; border-radius: 99px; background: #e4e0f3; }
+    .rarity-fill { height: 100%; border-radius: inherit; background: linear-gradient(90deg, #a18df0, #6453c7); }
+    .type-directory { margin-top: 18px; }
+    .type-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin-top: 14px; }
+    .type-tile { min-height: 48px; padding: 8px 4px; border: 1px solid #e3e1ed; border-radius: 10px; background: #fff; color: #514b68; font-weight: 750; cursor: pointer; }
+    .type-tile:hover, .type-tile[aria-current="true"] { border-color: #7461d2; background: #f4f1ff; color: #5142b1; }
+    .axis-list { display: grid; gap: 10px; margin: 20px 0 0; padding: 0; list-style: none; }
+    .axis-list li { display: flex; justify-content: space-between; gap: 16px; padding-bottom: 10px; border-bottom: 1px solid #eeedf4; }
+    .axis-list span:last-child { color: #6251bf; font-weight: 750; text-align: right; }
+    .notice { margin: 18px 0 0; color: #77798a; font-size: .85rem; line-height: 1.65; }
+    .notice a { color: #6050bc; }
+    [hidden] { display: none !important; }
+    @media (max-width: 480px) {
+      body { padding: 20px 12px; }
+      .card { border-radius: 20px; }
+      .actions .button { flex: 1; }
+      .choice-scale { gap: 5px; }
+      .scale-button { min-height: 60px; padding: 8px 2px; font-size: .72rem; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <p class="brand">83년생의 취향일지 · AI연구소</p>
+    <h1>나를 조금 더 자세히<br>알아보는 64유형 테스트</h1>
+    <p class="intro">50개 문항에 답하고, 결제 없이 MBTI와 DCNH를 결합한 64가지 유형 중 하나를 확인해보세요.<br>정답은 없으니 평소의 나와 가까운 쪽을 골라주세요.</p>
+
+    <section id="welcome" class="card" aria-labelledby="welcome-title">
+      <p class="eyebrow">50문항 · MBTI + DCNH · 무료</p>
+      <h2 id="welcome-title">내 MBTI에 어울리는 DCNH 하위유형은 무엇일까요?</h2>
+      <p class="muted">E/I, S/N, T/F, J/P 기본 성향에 지배형(D), 창조형(C), 규범형(N), 조화형(H) 중 하나를 더해 64개 조합으로 살펴봅니다.</p>
+      <div class="result-box">
+        <strong>결제·회원가입 없이 이용할 수 있어요.</strong><br>
+        답변과 결과는 이 브라우저 안에서만 계산되며 서버로 전송되지 않습니다.
+      </div>
+      <div class="actions">
+        <button id="start" class="button" type="button">무료 테스트 시작하기</button>
+      </div>
+      <p class="notice">참고 사이트의 MBTI+DCNH 구성과 공개된 희귀도 표시를 참고하되, 문항과 채점은 별도로 설계한 비공식 테스트입니다. 문항을 늘렸다고 과학적 정확도나 참고 사이트와 같은 유형 판정을 보장하는 것은 아닙니다.</p>
+    </section>
+
+    <section id="quiz" class="card" aria-labelledby="question" hidden>
+      <div class="progress-row"><span id="axis-label"></span><span id="step-label"></span></div>
+      <div class="track" aria-hidden="true"><div id="progress" class="bar"></div></div>
+      <p id="question-count" class="eyebrow" style="margin-top:24px"></p>
+      <h2 id="question"></h2>
+      <div id="choices" class="choices"></div>
+      <div class="actions">
+        <button id="back" class="button secondary" type="button">이전</button>
+        <button id="next" class="button" type="button" disabled>다음</button>
+      </div>
+    </section>
+
+    <section id="result" class="card" aria-labelledby="result-heading" aria-live="polite" hidden>
+      <p class="eyebrow">나의 무료 테스트 결과</p>
+      <h2 id="result-heading">나의 64유형 조합은</h2>
+      <p class="result-code"><button id="result-code" class="type-code-button" type="button" aria-expanded="false" aria-controls="type-detail"></button></p>
+      <p id="result-name" class="result-name"></p>
+      <div id="result-description" class="result-box"></div>
+      <section id="result-profile" class="result-profile" aria-label="유형 상세 해석"></section>
+      <ul id="axis-results" class="axis-list"></ul>
+      <section id="type-detail" class="type-detail" aria-live="polite" hidden></section>
+      <section class="type-directory" aria-labelledby="directory-heading">
+        <h3 id="directory-heading">64개 유형 둘러보기</h3>
+        <p class="muted">유형 코드를 누르면 간단한 해석과 공개된 희귀도 표시를 확인할 수 있습니다.</p>
+        <div id="type-grid" class="type-grid"></div>
+      </section>
+      <p class="notice">희귀도 순위와 체감도는 참고 사이트의 공개 표시값이며, 실제 인구 비율이나 검증된 통계가 아닙니다. 이 테스트의 판정 결과 역시 비공식 참고용으로만 봐주세요.</p>
+      <div class="actions">
+        <button id="copy" class="button" type="button">결과 복사하기</button>
+        <button id="restart" class="button secondary" type="button">다시 테스트하기</button>
+      </div>
+      <p id="copy-status" class="notice" aria-live="polite"></p>
+    </section>
+  </main>
+
+  <script>
+    const questions = [
+      { axis: "EI", pole: "E", title: "사람들과 이야기를 나누다 보면 생각이 더 또렷해지는 편이다." },
+      { axis: "EI", pole: "I", title: "말하기 전에 혼자 생각을 정리할 시간이 있어야 편하다." },
+      { axis: "EI", pole: "E", title: "새로운 모임에서는 주변 사람과 대화를 시작하며 분위기를 알아간다." },
+      { axis: "EI", pole: "I", title: "여럿이 함께한 뒤에는 혼자 보내는 시간이 있어야 기운이 돌아온다." },
+      { axis: "EI", pole: "E", title: "떠오른 생각은 누군가와 이야기하면서 구체화되는 경우가 많다." },
+      { axis: "EI", pole: "I", title: "중요한 일을 앞두면 혼자 조용히 생각을 정리하는 편이다." },
+      { axis: "SN", pole: "S", title: "새로운 내용을 배울 때 실제 사례와 구체적인 순서가 도움이 된다." },
+      { axis: "SN", pole: "N", title: "새로운 내용을 접하면 다른 아이디어와 어떻게 연결될지 생각한다." },
+      { axis: "SN", pole: "S", title: "설명할 때 구체적인 경험이나 예시를 중심으로 말하는 편이다." },
+      { axis: "SN", pole: "N", title: "세부사항을 보기 전에 전체 흐름이나 의미를 먼저 파악한다." },
+      { axis: "SN", pole: "S", title: "무언가를 판단할 때 실제로 확인된 정보와 경험을 우선 살핀다." },
+      { axis: "SN", pole: "N", title: "현재 사실만큼 앞으로 생길 수 있는 변화와 가능성도 중요하게 본다." },
+      { axis: "TF", pole: "T", title: "결정할 때는 기준을 일관되게 적용할 수 있는지 먼저 살핀다." },
+      { axis: "TF", pole: "F", title: "결정이 사람들에게 어떤 영향을 줄지 먼저 생각하는 편이다." },
+      { axis: "TF", pole: "T", title: "문제를 들으면 원인과 해결 방법을 나누어 생각한다." },
+      { axis: "TF", pole: "F", title: "문제를 들으면 관련된 사람들의 상황과 마음을 먼저 헤아린다." },
+      { axis: "TF", pole: "T", title: "의견이 다를 때 개인적인 친분보다 근거와 논리의 타당성을 따져본다." },
+      { axis: "TF", pole: "F", title: "피드백을 전할 때 상대가 받아들일 방식과 감정을 함께 고려한다." },
+      { axis: "JP", pole: "J", title: "약속이나 할 일을 미리 정리해두면 마음이 편하다." },
+      { axis: "JP", pole: "P", title: "상황이 달라질 수 있어 계획에 여유와 선택지를 남겨두는 편이다." },
+      { axis: "JP", pole: "J", title: "일을 시작할 때 순서와 마감 시점을 먼저 정하는 편이다." },
+      { axis: "JP", pole: "P", title: "일을 진행하면서 우선순위나 방법을 조정하는 편이다." },
+      { axis: "JP", pole: "J", title: "일정이 정해지면 미리 준비해두어 마감 직전의 변수를 줄인다." },
+      { axis: "JP", pole: "P", title: "계획을 미리 확정하기보다 선택할 수 있는 여지를 남겨두는 편이다." },
+      { subtype: "D", title: "팀에서 방향을 정하기 어려워하면 내가 먼저 선택지를 정리한다." },
+      { subtype: "D", title: "목표가 정해지면 사람들을 이끌어 결과를 내는 역할을 맡는 편이다." },
+      { subtype: "D", reverse: true, title: "결정이 필요한 상황에서는 다른 사람이 먼저 정해주기를 기다리는 편이다." },
+      { subtype: "D", title: "성과가 중요할 때는 우선순위를 세우고 실행을 밀어붙인다." },
+      { subtype: "D", reverse: true, title: "의견 충돌이 생기면 내 주장을 앞세우기보다 다른 사람의 결정을 따르는 편이다." },
+      { subtype: "D", title: "책임자가 분명하지 않은 상황에서는 내가 맡을 일을 정해 진행한다." },
+      { subtype: "D", reverse: true, title: "결과에 대한 책임이 따르는 결정은 가능하면 다른 사람과 나누고 싶다." },
+      { subtype: "C", title: "익숙한 방식이 비효율적으로 느껴지면 다른 방법을 떠올린다." },
+      { subtype: "C", reverse: true, title: "이미 검증된 방식이 있다면 새로운 방법을 시도하기보다 그대로 따르는 편이다." },
+      { subtype: "C", title: "서로 다른 아이디어를 연결해 독특한 해결책을 찾아보는 편이다." },
+      { subtype: "C", reverse: true, title: "변화를 주기보다 익숙한 방식으로 진행하는 편이 마음 편하다." },
+      { subtype: "C", title: "정해진 답이 없는 문제를 만나면 여러 가능성을 시험해보는 편이다." },
+      { subtype: "C", reverse: true, title: "새로운 방법을 찾기보다 이미 효과가 확인된 절차를 따르는 편이다." },
+      { subtype: "C", reverse: true, title: "익숙한 틀을 바꾸기보다 주어진 조건 안에서 해결책을 찾는다." },
+      { subtype: "N", title: "일을 시작하기 전에 순서와 기준을 정리해두는 편이다." },
+      { subtype: "N", reverse: true, title: "정해진 절차가 있어도 상황에 따라 생략하거나 바꾸는 편이다." },
+      { subtype: "N", title: "작업을 마친 뒤 누락이나 세부사항을 다시 확인한다." },
+      { subtype: "N", reverse: true, title: "세부 계획을 정하기보다 그때그때 떠오르는 방식으로 진행한다." },
+      { subtype: "N", title: "반복되는 일도 일정한 기준과 순서에 따라 처리하면 안정감을 느낀다." },
+      { subtype: "N", reverse: true, title: "세부 기준을 미리 정하기보다 진행하면서 필요한 부분을 정하는 편이다." },
+      { subtype: "H", title: "함께 일할 때 결과뿐 아니라 구성원들의 편안함도 중요하게 생각한다." },
+      { subtype: "H", reverse: true, title: "함께하는 분위기보다 내 의견을 관철하는 일이 더 중요할 때가 많다." },
+      { subtype: "H", title: "주변 사람이 필요로 하는 도움을 살펴 조용히 지원하는 편이다." },
+      { subtype: "H", reverse: true, title: "다른 사람과 맞추기보다 내 방식대로 혼자 처리하는 것이 편하다." },
+      { subtype: "H", title: "협업할 때 구성원들이 소외되지 않도록 의견을 고르게 듣는 편이다." },
+      { subtype: "H", reverse: true, title: "모두의 의견을 조율하기보다 각자 맡은 일을 독립적으로 하는 편이 낫다." }
+    ];
+
+    const axes = [
+      { key: "EI", name: "에너지 방향", letters: ["E", "I"], meanings: { E: "사람과의 교류에서 활력을 얻는 편", I: "혼자 생각하고 쉬며 활력을 얻는 편" }, descriptions: { E: "사람들과 대화하고 경험을 나누며 생각을 발전시키는 모습이 두드러집니다.", I: "혼자 생각을 정리하고 익숙한 관계 안에서 에너지를 회복하는 모습이 두드러집니다." } },
+      { key: "SN", name: "정보를 받아들이는 방식", letters: ["S", "N"], meanings: { S: "구체적인 사실과 경험에 주목하는 편", N: "의미와 가능성, 전체 흐름에 주목하는 편" }, descriptions: { S: "구체적인 정보와 경험을 바탕으로 현실적인 판단을 내리는 편입니다.", N: "정보 사이의 연결과 앞으로의 가능성을 생각하는 편입니다." } },
+      { key: "TF", name: "판단의 기준", letters: ["T", "F"], meanings: { T: "논리와 일관성을 우선 살피는 편", F: "사람과 상황에 미칠 영향을 살피는 편" }, descriptions: { T: "기준과 논리, 문제 해결의 효율성을 중요하게 살펴봅니다.", F: "사람들의 가치와 결정이 미칠 영향을 함께 고려합니다." } },
+      { key: "JP", name: "일과 생활을 운영하는 방식", letters: ["J", "P"], meanings: { J: "계획을 세우고 정리하는 것을 선호하는 편", P: "선택지를 열어두고 유연하게 움직이는 편" }, descriptions: { J: "계획을 세우고 일을 마무리해 예측 가능한 흐름을 만드는 편입니다.", P: "상황에 맞춰 선택지를 조정하며 유연하게 대응하는 편입니다." } }
+    ];
+    const subtypeNames = { D: "지배형", C: "창조형", N: "규범형", H: "조화형" };
+    const subtypeDescriptions = {
+      D: "목표를 정하고 주도적으로 실행하며, 책임과 결정이 필요한 상황에서 앞장서는 경향입니다.",
+      C: "기존 방식에 새 가능성을 더하고, 아이디어를 실험하며 개선하는 경향입니다.",
+      N: "기준과 절차를 살피고, 세부사항을 정리해 안정적으로 완성하는 경향입니다.",
+      H: "관계와 환경의 조화를 살피고, 주변을 지원하며 안정감을 만드는 경향입니다."
+    };
+    const scaleOptions = [
+      [1, "전혀 아니다"],
+      [2, "아닌 편이다"],
+      [3, "보통이다"],
+      [4, "그런 편이다"],
+      [5, "매우 그렇다"]
+    ];
+    const rarity = {
+      "INTJ-D":[9,88],"INTJ-C":[3,97],"INTJ-N":[22,67],"INTJ-H":[15,78],
+      "INTP-D":[18,73],"INTP-C":[6,92],"INTP-N":[35,47],"INTP-H":[28,58],
+      "ENTJ-D":[7,91],"ENTJ-C":[1,100],"ENTJ-N":[20,70],"ENTJ-H":[13,81],
+      "ENTP-D":[8,89],"ENTP-C":[2,98],"ENTP-N":[21,69],"ENTP-H":[14,80],
+      "INFJ-D":[23,66],"INFJ-C":[10,86],"INFJ-N":[42,36],"INFJ-H":[36,45],
+      "INFP-D":[24,64],"INFP-C":[11,84],"INFP-N":[43,34],"INFP-H":[37,44],
+      "ENFJ-D":[16,77],"ENFJ-C":[4,95],"ENFJ-N":[33,50],"ENFJ-H":[26,61],
+      "ENFP-D":[17,75],"ENFP-C":[5,94],"ENFP-N":[34,48],"ENFP-H":[27,59],
+      "ISTJ-D":[49,25],"ISTJ-C":[32,52],"ISTJ-N":[62,5],"ISTJ-H":[57,13],
+      "ISFJ-D":[55,16],"ISFJ-C":[40,39],"ISFJ-N":[64,2],"ISFJ-H":[61,6],
+      "ESTJ-D":[46,30],"ESTJ-C":[29,56],"ESTJ-N":[58,11],"ESTJ-H":[53,19],
+      "ESFJ-D":[52,20],"ESFJ-C":[39,41],"ESFJ-N":[63,3],"ESFJ-H":[60,8],
+      "ISTP-D":[38,42],"ISTP-C":[19,72],"ISTP-N":[50,23],"ISTP-H":[45,31],
+      "ISFP-D":[47,28],"ISFP-C":[30,55],"ISFP-N":[59,9],"ISFP-H":[54,17],
+      "ESTP-D":[31,53],"ESTP-C":[12,83],"ESTP-N":[48,27],"ESTP-H":[41,38],
+      "ESFP-D":[44,33],"ESFP-C":[25,63],"ESFP-N":[56,14],"ESFP-H":[51,22]
+    };
+    const typeNames = {
+      ISTJ: "차근차근 쌓아가는 현실형", ISFJ: "세심하게 살피는 배려형", INFJ: "의미를 찾는 통찰형", INTJ: "큰 그림을 설계하는 전략형",
+      ISTP: "직접 해보는 문제해결형", ISFP: "자기만의 감각을 지닌 온화형", INFP: "가치를 따라가는 상상형", INTP: "원리를 파고드는 탐구형",
+      ESTP: "현장에서 움직이는 실행형", ESFP: "분위기를 밝히는 경험형", ENFP: "가능성을 발견하는 아이디어형", ENTP: "새 관점을 즐기는 발상형",
+      ESTJ: "목표를 정리하는 추진형", ESFJ: "사람을 연결하는 협력형", ENFJ: "함께 성장시키는 이끔형", ENTJ: "방향을 제시하는 계획형"
+    };
+    const typeProfiles = {
+      ISTJ: { intro: "차분하게 사실을 살피고 맡은 일을 끝까지 책임지는 편입니다. 약속과 기준을 중요하게 여기며, 검증된 방식으로 꾸준히 결과를 쌓아갑니다.", strengths: "신뢰를 주는 꾸준함, 현실적인 판단, 세부를 놓치지 않는 책임감", watch: "갑작스러운 변경이나 근거가 불분명한 제안에는 적응 시간이 필요할 수 있습니다. 익숙한 절차가 늘 최선인지 한 번 더 점검하면 선택지가 넓어집니다." },
+      ISFJ: { intro: "주변의 필요를 세심하게 알아차리고 안정적으로 돕는 편입니다. 익숙한 사람과 환경을 소중히 여기며, 작은 약속도 꾸준히 지키려 합니다.", strengths: "세심한 관찰, 따뜻한 배려, 꾸준한 지원과 실무력", watch: "다른 사람을 먼저 챙기다 자신의 피로와 필요를 뒤늦게 알아차릴 수 있습니다. 도움을 주기 전에 가능한 범위와 원하는 바를 말로 나누어 보세요." },
+      INFJ: { intro: "겉으로 드러난 말뿐 아니라 그 안의 의미와 맥락을 함께 살피는 편입니다. 중요하게 여기는 가치와 장기적인 방향이 분명할 때 깊이 몰입합니다.", strengths: "통찰력, 의미를 연결하는 사고, 진심 어린 경청과 집중력", watch: "생각이 충분히 정리될 때까지 혼자 품거나 높은 기준으로 자신을 몰아붙일 수 있습니다. 완벽한 설명을 기다리기보다 현재 생각을 나누는 연습이 도움이 됩니다." },
+      INTJ: { intro: "복잡한 문제를 구조화하고 장기적인 목표를 향해 효율적인 길을 설계하는 편입니다. 독립적으로 깊이 생각하며, 원리와 개선 가능성을 찾습니다.", strengths: "전략적 사고, 독립성, 복잡한 문제를 정리하는 힘", watch: "효율과 논리에 집중하다 보면 상대의 감정이나 실행 과정의 변수를 놓칠 수 있습니다. 계획을 공유하고 다른 사람의 관점을 초기에 확인하면 협력이 쉬워집니다." },
+      ISTP: { intro: "문제가 생기면 직접 살펴보고 실제로 작동하는 해결책을 찾는 편입니다. 불필요한 절차보다 자율성과 실용성을 중시하며, 상황에 맞게 빠르게 대응합니다.", strengths: "침착한 문제 해결, 도구와 시스템을 다루는 감각, 현실 적응력", watch: "혼자 해결하는 데 익숙해 필요한 정보를 주변에 늦게 알릴 수 있습니다. 진행 상황과 도움 요청을 짧게 공유하면 결과를 함께 활용하기 좋습니다." },
+      ISFP: { intro: "자신이 중요하게 여기는 감각과 가치에 충실하며, 편안하고 진솔한 방식으로 주변과 관계 맺는 편입니다. 현재의 경험을 섬세하게 받아들입니다.", strengths: "감수성, 유연한 실천력, 개인의 차이를 존중하는 태도", watch: "갈등을 피하려다 원하는 바를 표현하지 못하거나 결정을 미룰 수 있습니다. 부담이 작을 때 선호와 경계를 분명히 말해두면 관계도 편안해집니다." },
+      INFP: { intro: "자신만의 가치와 상상력을 바탕으로 사람과 경험의 의미를 깊이 탐색하는 편입니다. 진정성이 느껴지는 일에 마음을 쏟고, 여러 가능성을 열어둡니다.", strengths: "공감과 상상력, 가치에 대한 진정성, 새로운 관점을 발견하는 힘", watch: "이상적인 기준과 현실의 차이에서 실망하거나, 많은 가능성 사이에서 시작을 늦출 수 있습니다. 중요도를 정하고 작은 단계로 옮기면 생각이 구체적인 성과로 이어집니다." },
+      INTP: { intro: "궁금한 점을 끝까지 파고들며 개념과 원리 사이의 논리적 연결을 찾는 편입니다. 독립적으로 탐구하고, 익숙한 설명에도 질문을 던집니다.", strengths: "분석력, 지적 호기심, 복잡한 개념을 재구성하는 능력", watch: "분석과 탐색이 길어져 실행이나 감정 표현이 뒤로 밀릴 수 있습니다. 충분히 완벽해지기 전이라도 임시 결론과 다음 행동을 정해보세요." },
+      ESTP: { intro: "현재 상황을 빠르게 읽고 행동으로 배우며 기회를 포착하는 편입니다. 변화가 많은 환경에서도 현실적인 선택을 하고, 직접 부딪치며 해결책을 찾습니다.", strengths: "상황 판단, 대담한 실행, 즉석에서 문제를 풀어가는 유연함", watch: "속도감 있게 움직이다 보면 장기적인 영향이나 세부 위험을 충분히 확인하지 못할 수 있습니다. 중요한 결정 전에는 잠깐 멈춰 결과와 대안을 살펴보세요." },
+      ESFP: { intro: "사람들과 경험을 나누며 주변의 분위기를 생생하게 만드는 편입니다. 지금 눈앞의 기회와 실제 경험에 민감하고, 즐거운 에너지를 행동으로 전합니다.", strengths: "친근한 소통, 현장 감각, 참여를 이끄는 활력", watch: "당장의 흥미와 분위기에 집중해 장기 계획이나 반복 업무가 지루하게 느껴질 수 있습니다. 일정을 짧은 구간으로 나누고 중간 점검을 두면 꾸준함을 보완할 수 있습니다." },
+      ENFP: { intro: "사람과 아이디어에서 새로운 가능성을 발견하고, 호기심을 나누며 주변에 활기를 더하는 편입니다. 의미 있다고 느끼는 주제에는 진심으로 몰입하고 다양한 시도를 즐깁니다.", strengths: "가능성을 보는 시야, 따뜻한 격려, 아이디어를 연결하는 창의성", watch: "흥미로운 선택지가 많아지면 우선순위가 흐려지거나 시작한 일을 마무리하기 어려울 수 있습니다. 중요한 목표를 소수로 정하고 작은 완료 기준을 만들어 보세요." },
+      ENTP: { intro: "당연하게 여겨지는 전제에 질문을 던지고, 토론과 실험을 통해 새로운 해결책을 찾는 편입니다. 변화와 지적 자극이 있는 환경에서 아이디어를 확장합니다.", strengths: "기민한 발상, 논점을 발견하는 능력, 여러 대안을 빠르게 만드는 힘", watch: "논쟁을 즐기는 태도가 상대에게는 비판이나 거리감으로 전달될 수 있고, 새 아이디어가 기존 과제를 밀어낼 수 있습니다. 상대의 의도와 마무리 일정도 함께 확인해 보세요." },
+      ESTJ: { intro: "목표와 역할을 분명히 하고, 자원을 정리해 실제 결과를 만드는 편입니다. 책임이 필요한 상황에서 판단을 내리고 실행을 추진하는 데 익숙합니다.", strengths: "조직력, 명확한 의사결정, 책임감 있는 추진력", watch: "속도와 기준을 강조하면 구성원마다 다른 사정이나 의견이 충분히 드러나지 않을 수 있습니다. 결론을 내리기 전에 반대 의견과 현장의 어려움을 확인해보세요." },
+      ESFJ: { intro: "사람들이 서로 연결되고 함께 잘 해낼 수 있도록 분위기와 실무를 살피는 편입니다. 주변의 기대를 잘 읽고, 협력과 인정이 있는 환경에서 힘을 얻습니다.", strengths: "조율과 협력, 세심한 지원, 관계를 이어가는 소통", watch: "모두를 만족시키려다 자신의 우선순위를 희생하거나 평가에 민감해질 수 있습니다. 부탁을 수락하기 전 여유와 한계를 확인하고 솔직히 조율하는 것이 좋습니다." },
+      ENFJ: { intro: "사람들의 가능성과 공동의 방향을 발견하고, 대화를 통해 함께 나아가도록 돕는 편입니다. 의미 있는 목표에 사람을 연결하고 성장을 지원합니다.", strengths: "격려와 설득, 관계의 흐름을 읽는 감각, 공동 목표를 만드는 능력", watch: "다른 사람의 성장을 책임지려다 자신의 에너지를 과하게 쓰거나 답을 대신 정해줄 수 있습니다. 지원과 대신 해결하기의 경계를 살피고 자신의 필요도 돌보세요." },
+      ENTJ: { intro: "큰 목표를 구체적인 전략과 실행 단계로 바꾸고, 필요한 결정을 내려 앞으로 나아가는 편입니다. 복잡한 과제를 구조화하고 성과를 만드는 데 동기를 얻습니다.", strengths: "방향 설정, 전략적 실행, 책임을 맡는 결단력", watch: "목표 달성에 몰입하면 관계의 속도 차이나 충분한 논의가 부차적으로 느껴질 수 있습니다. 성공의 기준에 지속 가능성과 구성원의 참여도 포함해보세요." }
+    };
+    const subtypeProfiles = {
+      D: { label: "주도·추진 성향", summary: "네 가지 하위유형 중 주도성과 목표 추진에 무게가 실린 결과입니다. 방향을 정해야 하거나 책임자가 필요한 상황에서 먼저 움직이는 모습으로 나타날 수 있습니다.", strength: "결정이 필요한 순간 역할을 맡고, 목표를 행동으로 옮기는 추진력", balance: "빠른 결론이 다른 사람에게는 참여할 기회를 줄이는 것으로 느껴지지 않는지 확인해보세요." },
+      C: { label: "창의·탐색 성향", summary: "새로운 관점과 대안을 찾고, 익숙한 방식을 개선하려는 경향이 두드러진 결과입니다. 자율적으로 시도하고 아이디어를 발전시킬 때 동기를 얻을 수 있습니다.", strength: "가능성을 탐색하고 서로 다른 생각을 연결해 새 접근을 만드는 힘", balance: "아이디어를 실행 가능한 한두 단계와 마감 기준으로 좁혀보면 완성까지 이어가기 좋습니다." },
+      N: { label: "기준·완성 성향", summary: "일의 순서와 기준을 정리하고, 세부를 점검해 안정적으로 마무리하려는 경향이 나타난 결과입니다. 예측 가능한 흐름과 명확한 기대가 도움이 될 수 있습니다.", strength: "누락을 줄이고 일관된 품질과 신뢰를 쌓는 꼼꼼함", balance: "모든 조건이 갖춰질 때까지 기다리기보다, 지금 필요한 기준과 나중에 조정할 부분을 구분해보세요." },
+      H: { label: "조화·지원 성향", summary: "관계의 분위기와 서로의 필요를 함께 살피며 협력적인 환경을 만드는 경향이 나타난 결과입니다. 함께하는 사람들의 참여와 안정감을 중요하게 여길 수 있습니다.", strength: "상대의 필요를 살피고 대화를 이어가며 협력을 돕는 배려", balance: "조화를 위해 자신의 의견을 감추지 않도록, 원하는 것과 양보 가능한 부분을 구분해 표현해보세요." }
+    };
+    const answers = Array(questions.length).fill(null);
+    let current = 0;
+    let tieQuestions = [];
+    let tieAnswers = [];
+    const typeOrder = ["INTJ", "INTP", "ENTJ", "ENTP", "INFJ", "INFP", "ENFJ", "ENFP", "ISTJ", "ISFJ", "ESTJ", "ESFJ", "ISTP", "ISFP", "ESTP", "ESFP"];
+    const subtypeOrder = ["D", "C", "N", "H"];
+    const $ = (id) => document.getElementById(id);
+
+    function renderQuestion() {
+      const isTieBreak = current >= questions.length;
+      const tieIndex = current - questions.length;
+      const item = isTieBreak ? tieQuestions[tieIndex] : questions[current];
+      const total = questions.length + tieQuestions.length;
+      $("axis-label").textContent = isTieBreak ? "결과 확인" : item.axis ? "기본 성향" : "하위유형 특성";
+      $("step-label").textContent = `${current + 1} / ${total}`;
+      $("question-count").textContent = isTieBreak ? "추가 확인" : `질문 ${current + 1}`;
+      $("question").textContent = item.title;
+      $("progress").style.width = `${(current / total) * 100}%`;
+      $("choices").replaceChildren();
+      $("choices").className = isTieBreak ? "choices" : "choice-scale";
+      const options = isTieBreak ? item.options : scaleOptions;
+      options.forEach(([value, text]) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        const selected = isTieBreak ? tieAnswers[tieIndex] === value : answers[current] === value;
+        button.className = `${isTieBreak ? "choice" : "scale-button"}${selected ? " selected" : ""}`;
+        button.setAttribute("aria-pressed", String(selected));
+        button.textContent = text;
+        button.addEventListener("click", () => {
+          if (isTieBreak) tieAnswers[tieIndex] = value;
+          else answers[current] = value;
+          renderQuestion();
+        });
+        $("choices").append(button);
+      });
+      $("back").disabled = current === 0;
+      $("next").disabled = isTieBreak ? tieAnswers[tieIndex] === null : answers[current] === null;
+      $("next").textContent = current === total - 1 ? "결과 확인하기" : "다음";
+    }
+
+    function calculateScores() {
+      const scores = {};
+      axes.forEach(({ key, letters }) => {
+        scores[key] = Object.fromEntries(letters.map((letter) => [letter, 0]));
+      });
+      subtypeOrder.forEach((subtype) => { scores[subtype] = 0; });
+      questions.forEach((question, index) => {
+        const answer = answers[index];
+        if (question.axis) {
+          const opposite = axes.find((axis) => axis.key === question.axis).letters.find((letter) => letter !== question.pole);
+          scores[question.axis][question.pole] += answer - 3;
+          scores[question.axis][opposite] += 3 - answer;
+        } else {
+          scores[question.subtype] += question.reverse ? 6 - answer : answer;
+        }
+      });
+      subtypeOrder.forEach((subtype) => {
+        const questionCount = questions.filter((question) => question.subtype === subtype).length;
+        scores[subtype] /= questionCount;
+      });
+      return scores;
+    }
+
+    function getTiedValues(values) {
+      const max = Math.max(...Object.values(values));
+      return Object.keys(values).filter((key) => Math.abs(values[key] - max) < 1e-9);
+    }
+
+    function prepareTieBreaks() {
+      const scores = calculateScores();
+      tieQuestions = [];
+      tieAnswers = [];
+      axes.forEach(({ key, letters, meanings }) => {
+        const tied = getTiedValues(scores[key]);
+        if (tied.length > 1) {
+          tieQuestions.push({
+            key,
+            title: "두 가지 모습이 비슷하게 느껴져요. 평소의 나와 조금 더 가까운 쪽을 골라주세요.",
+            options: tied.map((letter) => [letter, meanings[letter]])
+          });
+        }
+      });
+      const subtypeScores = Object.fromEntries(subtypeOrder.map((subtype) => [subtype, scores[subtype]]));
+      const tiedSubtypes = getTiedValues(subtypeScores);
+      if (tiedSubtypes.length > 1) {
+        tieQuestions.push({
+          key: "DCNH",
+          title: "하위유형 성향이 비슷하게 나왔어요. 더 가까운 설명을 하나 골라주세요.",
+          options: tiedSubtypes.map((subtype) => [subtype, `${subtypeNames[subtype]}: ${subtypeDescriptions[subtype]}`])
+        });
+      }
+      return scores;
+    }
+
+    function getResult(scores) {
+      const result = {};
+      axes.forEach(({ key }) => {
+        const tied = getTiedValues(scores[key]);
+        result[key] = tied.length === 1 ? tied[0] : tieAnswers.find((_, index) => tieQuestions[index]?.key === key);
+      });
+      const subtypeScores = Object.fromEntries(subtypeOrder.map((subtype) => [subtype, scores[subtype]]));
+      const tiedSubtypes = getTiedValues(subtypeScores);
+      result.subtype = tiedSubtypes.length === 1
+        ? tiedSubtypes[0]
+        : tieAnswers.find((_, index) => tieQuestions[index]?.key === "DCNH");
+      return result;
+    }
+
+    function addProfileSection(container, title, text) {
+      const section = document.createElement("section");
+      section.className = "profile-section";
+      const heading = document.createElement("h3");
+      heading.textContent = title;
+      const paragraph = document.createElement("p");
+      paragraph.textContent = text;
+      section.append(heading, paragraph);
+      container.append(section);
+    }
+
+    function renderProfile(container, base, subtype) {
+      const profile = typeProfiles[base];
+      const sub = subtypeProfiles[subtype];
+      const [ei, sn, tf, jp] = base;
+      const social = ei === "E"
+        ? "대화를 주고받으며 생각을 발전시키는 편이지만, 중요한 이야기를 할 때는 상대가 충분히 말할 공간도 남겨두면 좋습니다."
+        : "생각을 정리한 뒤 깊이 있는 대화를 나누는 편이며, 필요한 순간에는 자신의 판단 과정을 주변에 알려 오해를 줄일 수 있습니다.";
+      const information = sn === "N"
+        ? "큰 흐름과 가능성을 먼저 보는 장점을 살리되, 실행 전에는 일정·사실·세부 조건을 확인하면 구상이 현실에 잘 연결됩니다."
+        : "구체적인 경험과 확인된 사실을 바탕으로 판단하는 장점을 살리되, 기존 방식 밖의 가능성도 한 번 검토하면 선택의 폭이 넓어집니다.";
+      const decision = tf === "T"
+        ? "근거와 일관성을 중시하는 판단에 상대의 우려와 결정이 미칠 영향까지 더하면, 합리적인 결론을 더 잘 전달할 수 있습니다."
+        : "사람과 가치에 미치는 영향을 살피는 판단에 객관적인 기준과 실행 조건까지 더하면, 배려와 현실성을 함께 지킬 수 있습니다.";
+      const planning = jp === "J"
+        ? "계획을 세우고 마무리하는 힘을 활용하되, 예상 밖의 변화가 생겼을 때 조정할 여지를 미리 남겨두면 부담이 줄어듭니다."
+        : "상황에 맞게 방향을 조정하는 유연함을 활용하되, 꼭 지켜야 할 마감과 우선순위는 작게라도 정해두면 실행이 안정됩니다.";
+      const work = subtype === "D"
+        ? "목표와 책임 범위가 분명하고 제안이 실제 실행으로 이어지는 환경에서 역량을 발휘하기 쉽습니다. 추진 속도와 구성원의 동의가 함께 확보되는지 점검해보세요."
+        : subtype === "C"
+          ? "새로운 아이디어를 시험하고 개선할 자율성이 있는 환경이 잘 맞을 수 있습니다. 탐색 시간을 보장하되, 결과물의 범위와 완료 시점을 합의하면 강점이 더 잘 드러납니다."
+          : subtype === "N"
+            ? "역할과 기준이 명확하고 집중해 완성도를 높일 수 있는 환경이 도움이 될 수 있습니다. 기준이 바뀌는 경우 변경 이유와 우선순위를 확인하면 안정적으로 적응할 수 있습니다."
+            : "서로 존중하며 협력하고 필요한 지원을 주고받는 환경에서 안정감을 느낄 수 있습니다. 다른 사람을 돕는 역할과 자신의 핵심 업무 사이에 균형을 두는 것이 중요합니다.";
+      const keywords = [typeNames[base], sub.label, ei === "E" ? "교류 중심" : "성찰 중심", sn === "N" ? "가능성 탐색" : "현실 감각", tf === "T" ? "논리 판단" : "가치 고려", jp === "J" ? "계획·정리" : "유연한 대응"];
+      container.replaceChildren();
+      addProfileSection(container, "한눈에 보는 나의 성향", `${profile.intro} ${sub.summary}`);
+      const keywordSection = document.createElement("section");
+      keywordSection.className = "profile-section";
+      const keywordHeading = document.createElement("h3");
+      keywordHeading.textContent = "핵심 키워드";
+      const tags = document.createElement("div");
+      tags.className = "profile-tags";
+      keywords.forEach((keyword) => {
+        const tag = document.createElement("span");
+        tag.className = "profile-tag";
+        tag.textContent = keyword;
+        tags.append(tag);
+      });
+      keywordSection.append(keywordHeading, tags);
+      container.append(keywordSection);
+      addProfileSection(container, "강점으로 나타날 수 있는 점", `${profile.strengths}. 여기에 ${sub.strength}가 더해질 수 있습니다.`);
+      addProfileSection(container, "일과 공부에서 편안한 환경", work);
+      addProfileSection(container, "관계와 소통에서", `${social} ${decision}`);
+      addProfileSection(container, "균형을 위한 작은 제안", `${profile.watch} ${sub.balance} ${information} ${planning}`);
+    }
+
+    function renderTypeDetail(code) {
+      const [base, subtype] = code.split("-");
+      const [rank, rarityFeel] = rarity[code];
+      const detail = $("type-detail");
+      detail.replaceChildren();
+      const heading = document.createElement("h3");
+      heading.textContent = `${code} · ${typeNames[base]} (${subtypeNames[subtype]})`;
+      const description = document.createElement("p");
+      description.textContent = `${typeNames[base]}의 기본 성향에 ${subtypeDescriptions[subtype]}`;
+      const profile = document.createElement("div");
+      profile.className = "result-profile";
+      renderProfile(profile, base, subtype);
+      const rankText = document.createElement("p");
+      rankText.className = "rarity-rank";
+      rankText.textContent = `64개 유형 중 희귀도 ${rank}위`;
+      const scoreText = document.createElement("p");
+      scoreText.textContent = `참고 사이트 표시 희귀 체감도: ${rarityFeel}%`;
+      const track = document.createElement("div");
+      track.className = "rarity-track";
+      track.setAttribute("role", "img");
+      track.setAttribute("aria-label", `참고 사이트 희귀 체감도 ${rarityFeel}%`);
+      const fill = document.createElement("div");
+      fill.className = "rarity-fill";
+      fill.style.width = `${rarityFeel}%`;
+      track.append(fill);
+      const note = document.createElement("p");
+      note.className = "notice";
+      note.textContent = "순위와 체감도는 참고 사이트의 공개 표시값을 옮긴 것입니다. 실제 인구 비율이나 과학적으로 검증된 희귀도 통계는 아닙니다.";
+      const source = document.createElement("a");
+      source.href = `https://64mbti.sundry-know.com/result/${base.toLowerCase()}-${subtype.toLowerCase()}`;
+      source.target = "_blank";
+      source.rel = "noreferrer";
+      source.textContent = "참고 사이트의 이 유형 상세 보기";
+      note.append(document.createElement("br"), source);
+      detail.append(heading, description, profile, rankText, scoreText, track, note);
+      detail.hidden = false;
+      $("result-code").setAttribute("aria-expanded", "true");
+    }
+
+    function renderDirectory(selectedCode) {
+      const grid = $("type-grid");
+      grid.replaceChildren();
+      typeOrder.forEach((base) => subtypeOrder.forEach((subtype) => {
+        const code = `${base}-${subtype}`;
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "type-tile";
+        button.textContent = code;
+        button.setAttribute("aria-current", String(code === selectedCode));
+        button.addEventListener("click", () => {
+          grid.querySelectorAll(".type-tile").forEach((tile) => tile.setAttribute("aria-current", "false"));
+          button.setAttribute("aria-current", "true");
+          renderTypeDetail(code);
+        });
+        grid.append(button);
+      }));
+    }
+
+    function showResult(scores) {
+      const result = getResult(scores);
+      const base = result.EI + result.SN + result.TF + result.JP;
+      const code = `${base}-${result.subtype}`;
+      $("result-code").textContent = code;
+      $("result-code").setAttribute("aria-expanded", "false");
+      $("type-detail").hidden = true;
+      $("result-name").textContent = `${typeNames[base]} · ${subtypeNames[result.subtype]}`;
+      $("result-description").textContent = `${axes.map((axis) => axis.descriptions[result[axis.key]]).join(" ")} ${subtypeDescriptions[result.subtype]}`;
+      renderProfile($("result-profile"), base, result.subtype);
+      $("axis-results").replaceChildren();
+      axes.forEach(({ key, name, meanings, letters }) => {
+        const li = document.createElement("li");
+        const left = document.createElement("span");
+        left.textContent = name;
+        const right = document.createElement("span");
+        const gap = Math.abs(scores[key][letters[0]] - scores[key][letters[1]]);
+        const tendency = gap < 3 ? "응답이 비슷함" : gap < 8 ? "약한 경향" : "상대적으로 뚜렷한 경향";
+        right.textContent = `${result[key]} · ${meanings[result[key]]} (${tendency})`;
+        li.append(left, right);
+        $("axis-results").append(li);
+      });
+      const subtypeItem = document.createElement("li");
+      const subtypeLabel = document.createElement("span");
+      subtypeLabel.textContent = "DCNH 하위유형";
+      const subtypeValue = document.createElement("span");
+      subtypeValue.textContent = `${result.subtype} · ${subtypeNames[result.subtype]}`;
+      subtypeItem.append(subtypeLabel, subtypeValue);
+      $("axis-results").append(subtypeItem);
+      renderDirectory(code);
+      $("quiz").hidden = true;
+      $("result").hidden = false;
+      $("progress").style.width = "100%";
+      $("result-heading").focus({ preventScroll: true });
+    }
+
+    $("start").addEventListener("click", () => {
+      $("welcome").hidden = true;
+      $("quiz").hidden = false;
+      current = 0;
+      renderQuestion();
+    });
+    $("back").addEventListener("click", () => {
+      if (current > 0) {
+        current -= 1;
+        if (current === questions.length - 1 && tieQuestions.length) {
+          tieQuestions = [];
+          tieAnswers = [];
+        }
+      }
+      renderQuestion();
+    });
+    $("next").addEventListener("click", () => {
+      const total = questions.length + tieQuestions.length;
+      const isTieBreak = current >= questions.length;
+      if (isTieBreak ? tieAnswers[current - questions.length] === null : answers[current] === null) return;
+      if (current < total - 1) {
+        current += 1;
+        renderQuestion();
+      } else if (current === questions.length - 1) {
+        const scores = prepareTieBreaks();
+        if (tieQuestions.length) {
+          current += 1;
+          renderQuestion();
+        } else {
+          showResult(scores);
+        }
+      } else {
+        showResult(calculateScores());
+      }
+    });
+    $("restart").addEventListener("click", () => {
+      answers.fill(null);
+      current = 0;
+      tieQuestions = [];
+      tieAnswers = [];
+      $("result").hidden = true;
+      $("welcome").hidden = false;
+    });
+    $("result-code").addEventListener("click", () => {
+      const detail = $("type-detail");
+      if (detail.hidden) renderTypeDetail($("result-code").textContent);
+      else {
+        detail.hidden = true;
+        $("result-code").setAttribute("aria-expanded", "false");
+      }
+    });
+    $("copy").addEventListener("click", async () => {
+      const text = `나의 무료 성격 테스트 결과는 ${$("result-code").textContent} (${ $("result-name").textContent })입니다.`;
+      try {
+        await navigator.clipboard.writeText(text);
+        $("copy-status").textContent = "결과를 클립보드에 복사했습니다.";
+      } catch (error) {
+        $("copy-status").textContent = "복사할 수 없습니다. 결과 코드를 직접 선택해 복사해 주세요.";
+        console.error("결과 복사에 실패했습니다.", error);
+      }
+    });
+  </script>
+</body>
+</html>
